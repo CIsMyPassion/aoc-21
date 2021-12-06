@@ -15,6 +15,7 @@ fn read_data() -> Vec<i32> {
     return data;
 }
 
+#[derive(Debug)]
 enum Derivative {
     Increasing,
     Decreasing
@@ -39,4 +40,8 @@ fn main() {
     println!("Length: {}", data.len());
     let derivatives = calculate_derivatives(data);
     println!("Length: {}", derivatives.len());
+
+    for d in derivatives {
+        println!("{:?}", d);
+    }
 }
