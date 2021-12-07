@@ -32,7 +32,7 @@ fn calculate_derivatives(data: Vec<i32>) -> Vec<Derivative> {
     return derivatives;
 }
 
-fn main() {
+fn task1() {
 
     // read data form file
     let data = read_data();
@@ -45,4 +45,41 @@ fn main() {
 
     // output count of increasing and decreasing derivatives
     println!("Increasing: {}\nDecreasing: {}", increase_count, decrease_count);
+}
+
+fn calculate_sliding_window(data: Vec<i32>) -> Vec<i32> {
+
+    let mut sliding_window = Vec::new();
+
+    for i in 0..data.len() - 2 {
+        let sum = data[i] + data[i + 1] + data[i + 2];
+        sliding_window.push(sum);
+    }
+
+    return sliding_window;
+}
+
+fn task2() {
+
+    // read data form file
+    let data = read_data();
+    // calculate sliding window
+    let sliding_window = calculate_sliding_window(data);
+    // calculate derivatives
+    let derivatives = calculate_derivatives(sliding_window);
+
+    // count increasing and decreasing derivaties
+    let increase_count = derivatives.iter().filter(|&d| *d == Derivative::Increasing).count();
+    let decrease_count = derivatives.iter().filter(|&d| *d == Derivative::Decreasing).count();
+
+    // output count of increasing and decreasing derivatives
+    println!("Increasing: {}\nDecreasing: {}", increase_count, decrease_count);
+}
+
+fn main() {
+    println!("Task 1:");
+    task1();
+
+    println!("Task 2:");
+    task2();
 }
