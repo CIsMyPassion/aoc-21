@@ -3,19 +3,16 @@ fn read_data() -> Vec<i32> {
     let contents = std::fs::read_to_string("data")
         .expect("File could no be read");
 
-    println!("Data is:\n{}", contents);
 
-    let mut data = Vec::new();
-
-    data.push(199);
-    data.push(200);
-    data.push(203);
-    data.push(201);
+    let lines = contents.lines().collect::<Vec<_>>();
+    let data = lines.into_iter().map(String::from)
+                                .map(|s| s.parse().unwrap())
+                                .collect();
 
     return data;
 }
 
-#[derive(Debug)]
+#[derive(PartialEq)]
 enum Derivative {
     Increasing,
     Decreasing
@@ -36,12 +33,16 @@ fn calculate_derivatives(data: Vec<i32>) -> Vec<Derivative> {
 }
 
 fn main() {
-    let data = read_data();
-    println!("Length: {}", data.len());
-    let derivatives = calculate_derivatives(data);
-    println!("Length: {}", derivatives.len());
 
-    for d in derivatives {
-        println!("{:?}", d);
-    }
+    // read data form file
+    let data = read_data();
+    // calculate the derivatives
+    let derivatives = calculate_derivatives(data);
+
+    // count increasing and decreasing derivaties
+    let increase_count = derivatives.iter().filter(|&d| *d == Derivative::Increasing).count();
+    let decrease_count = derivatives.iter().filter(|&d| *d == Derivative::Decreasing).count();
+
+    // output count of increasing and decreasing derivatives
+    println!("Increasing: {}\nDecreasing: {}", increase_count, decrease_count);
 }
