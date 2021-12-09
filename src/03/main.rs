@@ -54,8 +54,47 @@ fn task1() {
     println!("Result: {}", gamma as u32 * epsilon as u32);
 }
 
+fn oxygen_generator_rating(data: &Vec<u16>) -> u16 {
+
+    let mut filter_list = data.clone();
+
+    for index in (0..12).rev() {
+        println!("Index {}", index);
+
+        let mut count = 0;
+
+        for number in filter_list {
+            if get_bit(&number, &index) {
+                count += 1;
+            }
+        }
+
+        let remove = count >= filter_list.len();
+
+        filter_list.retain(|&number| get_bit(&number, &index) == remove);
+
+        println!("Len {}", filter_list.len());
+
+        if filter_list.len() == 1 {
+            return filter_list[0];
+        }
+    }
+
+    return filter_list[0];
+}
+
+fn co2_scrubber_ratinf(data: &Vec<u16>) -> u16 {
+    return 1;
+}
+
 fn task2() {
 
+    let data = read_data();
+
+    let oxygen = oxygen_generator_rating(&data);
+    let co2 = co2_scrubber_ratinf(&data);
+
+    println!("Result: {}", oxygen * co2);
 }
 
 fn main() {
