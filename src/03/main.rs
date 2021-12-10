@@ -59,32 +59,55 @@ fn oxygen_generator_rating(data: &Vec<u16>) -> u16 {
     let mut filter_list = data.clone();
 
     for index in (0..12).rev() {
-        println!("Index {}", index);
+        let mut one_count = 0;
+        let mut zero_count = 0;
 
-        let mut count = 0;
-
-        for number in filter_list {
+        for number in &filter_list {
             if get_bit(&number, &index) {
-                count += 1;
+                one_count += 1;
+            } else {
+                zero_count += 1;
             }
         }
 
-        let remove = count >= filter_list.len();
+        let keep_one = one_count >= zero_count;
+        println!("Index {} keep one {}", index, keep_one);
 
-        filter_list.retain(|&number| get_bit(&number, &index) == remove);
+        filter_list.retain(|&number| get_bit(&number, &index) == keep_one);
 
-        println!("Len {}", filter_list.len());
-
-        if filter_list.len() == 1 {
-            return filter_list[0];
-        }
+        if filter_list.len() == 1 { break; }
     }
 
+    println!("O2 {}", filter_list[0]);
     return filter_list[0];
 }
 
 fn co2_scrubber_ratinf(data: &Vec<u16>) -> u16 {
-    return 1;
+
+    let mut filter_list = data.clone();
+
+    for index in (0..12).rev() {
+        let mut one_count = 0;
+        let mut zero_count = 0;
+
+        for number in &filter_list {
+            if get_bit(&number, &index) {
+                one_count += 1;
+            } else {
+                zero_count += 1;
+            }
+        }
+
+        let keep_one = one_count < zero_count;
+        println!("Index {} keep one {}", index, keep_one);
+
+        filter_list.retain(|&number| get_bit(&number, &index) == keep_one);
+
+        if filter_list.len() == 1 { break; }
+    }
+
+    println!("C02 {}", filter_list[0]);
+    return filter_list[0];
 }
 
 fn task2() {
@@ -94,10 +117,11 @@ fn task2() {
     let oxygen = oxygen_generator_rating(&data);
     let co2 = co2_scrubber_ratinf(&data);
 
-    println!("Result: {}", oxygen * co2);
+    println!("Result: {}", oxygen as u32 * co2 as u32);
 }
 
 fn main() {
+
     println!("Task 1");
     task1();
 
