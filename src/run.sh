@@ -1,4 +1,5 @@
 #!/bin/bash
+set -eu
 
 if [ "$#" != 1 ] ; then
     echo "The build folder has to be given"

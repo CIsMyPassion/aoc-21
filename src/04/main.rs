@@ -19,14 +19,20 @@ impl FromStr for Board {
     type Err = ParseIntError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
+        //println!("{}", s);
         let mut values: [[u8; 5]; 5] = [[0; 5]; 5];
         let rows = s.split("\n").collect::<Vec<_>>();
+        //println!("{}", rows.len());
 
         for (i, r) in rows.iter().enumerate() {
-            let elements = r.split(" ").collect::<Vec<_>>();
+            let row_trim = r.trim().replace("  ", " ");
+            let elements = row_trim.split(" ").collect::<Vec<_>>();
+            //println!("{}", elements.len());
+            //println!("{}", r);
 
             for (j, e) in elements.iter().enumerate() {
                 values[j][i] = e.parse::<u8>().unwrap();
+                //println!("{} {} {}", values[j][i], j, i);
             }
         }
 
@@ -47,7 +53,25 @@ fn read_data() -> (Vec<u8>, Vec<Board>) {
 
     let mut boards: Vec<Board> = Vec::new();
 
-    let board_string = &contents[end_of_line..];
+    let mut board_string = &contents[end_of_line..];
+    let mut segment_end_index = board_string.find("\n\n");
+
+    while segment_end_index.is_some() {
+
+        let old_index = 2;
+        segment_end_index = board_string[old_index..].find("\n\n");
+
+        if let Some(end_index) = segment_end_index {
+            let single_board = &board_string[old_index..end_index + 1];
+
+            boards.push(single_board.parse::<Board>().unwrap());
+            board_string = &board_string[end_index+2..];
+
+        } else {
+            boards.push(board_string.trim().parse::<Board>().unwrap());
+
+        }
+    }
 
     (numbers, boards)
 }
@@ -57,11 +81,6 @@ fn task1() {
     let (numbers, boards) = read_data();
 
     println!("{} {}", numbers.len(), boards.len());
-
-    let vals = [[5; 5]; 5];
-    let board = Board::new(vals);
-
-    println!("{} {}", board.picked[0][0], board.values[0][0]);
 
     println!("Result: {}", 0);
 }
