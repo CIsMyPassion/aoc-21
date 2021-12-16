@@ -62,18 +62,18 @@ impl Board {
         true
     }
 
-    pub fn debug_print(&self) {
-        for row in self.picked.iter() {
-            let mut line: String = String::new();
-            for e in row.iter() {
-                if *e {
-                    line.push('1');
-                } else {
-                    line.push('0');
+    pub fn calculate_score(&self, last_number: &u8) -> u16 {
+        let mut total_unpicked: u16 = 0;
+
+        for i in 0..5 {
+            for j in 0..5 {
+                if !self.picked[i][j] {
+                    total_unpicked += self.values[i][j] as u16;
                 }
             }
-            println!("{}", line);
         }
+
+        return total_unpicked * *last_number as u16;
     }
 }
 
@@ -135,31 +135,42 @@ fn read_data() -> (Vec<u8>, Vec<Board>) {
     (numbers, boards)
 }
 
+fn find_first_winnig_board(numbers: Vec<u8>, mut boards: Vec<Board>) -> u16 {
+    for number in &numbers {
+        for board in &mut boards {
+            if board.choose_number(number) {
+                if board.is_solved() {
+                    return board.calculate_score(number);
+                }
+            }
+        }
+    }
+
+    return 0;
+}
+
 fn task1() {
 
-    let (numbers, mut boards) = read_data();
-    let mut solved_boards: Vec<Board> = Vec::new();
+    let (numbers, boards) = read_data();
+    let score = find_first_winnig_board(numbers, boards);
+
     /*
     for number in &numbers {
         for board in &mut boards {
             if board.choose_number(number) {
                 if board.is_solved() {
+                    let score = board.calculate_score(number);
 
-                    solved_boards.push(*board);
+                    if score > best_score {
+                        best_score = score;
+                    }
                 }
             }
         }
     }
     */
-    for number in &numbers {
-        for board in &mut boards {
-            board.choose_number(number);
-        }
-    }
 
-    println!("{} {}", numbers.len(), boards.len());
-
-    println!("Result: {}", 0);
+    println!("Result: {}", score);
 }
 
 fn task2() {
