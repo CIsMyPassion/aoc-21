@@ -138,7 +138,7 @@ fn read_data() -> (Vec<u8>, Vec<Board>) {
     (numbers, boards)
 }
 
-fn find_first_winnig_board(numbers: Vec<u8>, mut boards: Vec<Board>) -> u16 {
+fn find_first_winning_board(numbers: Vec<u8>, mut boards: Vec<Board>) -> u16 {
 
     for number in &numbers {
 
@@ -159,7 +159,10 @@ fn find_first_winnig_board(numbers: Vec<u8>, mut boards: Vec<Board>) -> u16 {
         }
     }
 
-    println!("{:?}", boards[1]);
+    return 0;
+}
+
+fn find_last_winning_board(numbers: Vec<u8>, mut boards: Vec<Board>) -> u16 {
 
     return 0;
 }
@@ -167,13 +170,17 @@ fn find_first_winnig_board(numbers: Vec<u8>, mut boards: Vec<Board>) -> u16 {
 fn task1() {
 
     let (numbers, boards) = read_data();
-    let score = find_first_winnig_board(numbers, boards);
+    let score = find_first_winning_board(numbers, boards);
 
     println!("Result: {}", score);
 }
 
 fn task2() {
-    println!("Result: {}", 0);
+
+    let (numbers, boards) = read_data();
+    let score = find_last_winning_board(numbers, boards);
+
+    println!("Result: {}", score);
 }
 
 fn main() {
