@@ -2,6 +2,7 @@ use std::str::FromStr;
 use std::num::ParseIntError;
 use std::fs;
 
+#[derive(Debug)]
 struct Board {
     values: [[u8; 5]; 5],
     picked: [[bool; 5]; 5],
@@ -14,14 +15,16 @@ impl Board {
     }
 
     pub fn choose_number(&mut self, number: &u8) -> bool {
-        for (i, row) in self.values.iter().enumerate() {
-            for (j, element) in row.iter().enumerate() {
-                if *element == *number {
+
+        for i in 0..5 {
+            for j in 0..5 {
+                if self.values[i][j] == *number {
                     self.picked[i][j] = true;
                     return true;
                 }
             }
         }
+
         false
     }
 
@@ -43,23 +46,23 @@ impl Board {
     }
 
     fn check_row(&self, index: usize) -> bool {
+        let mut sum = 0;
         for j in 0..5 {
-            if !self.picked[index][j] {
-                return false;
+            if self.picked[index][j] {
+                sum += 1;
             }
         }
-
-        true
+        return sum == 5;
     }
 
     fn check_column(&self, index: usize) -> bool {
+        let mut sum = 0;
         for j in 0..5 {
-            if !self.picked[j][index] {
-                return false;
+            if self.picked[j][index] {
+                sum += 1;
             }
         }
-
-        true
+        return sum == 5;
     }
 
     pub fn calculate_score(&self, last_number: &u8) -> u16 {
@@ -73,7 +76,7 @@ impl Board {
             }
         }
 
-        return total_unpicked * *last_number as u16;
+        return total_unpicked * (*last_number as u16);
     }
 }
 
@@ -91,7 +94,7 @@ impl FromStr for Board {
             let elements = row_trim.split(" ").collect::<Vec<_>>();
 
             for (j, e) in elements.iter().enumerate() {
-                values[j][i] = e.parse::<u8>().unwrap();
+                values[i][j] = e.parse::<u8>().unwrap();
             }
         }
 
@@ -121,7 +124,7 @@ fn read_data() -> (Vec<u8>, Vec<Board>) {
         segment_end_index = board_string[old_index..].find("\n\n");
 
         if let Some(end_index) = segment_end_index {
-            let single_board = &board_string[old_index..end_index + 1];
+            let single_board = &board_string[old_index..end_index + 2];
 
             boards.push(single_board.parse::<Board>().unwrap());
             board_string = &board_string[end_index+2..];
@@ -136,15 +139,27 @@ fn read_data() -> (Vec<u8>, Vec<Board>) {
 }
 
 fn find_first_winnig_board(numbers: Vec<u8>, mut boards: Vec<Board>) -> u16 {
+
     for number in &numbers {
+
+        let mut solved = false;
+        let mut solution: u16 = 0;
+
         for board in &mut boards {
             if board.choose_number(number) {
                 if board.is_solved() {
-                    return board.calculate_score(number);
+                    solution = board.calculate_score(number);
+                    solved = true;
                 }
             }
         }
+
+        if solved {
+            return solution;
+        }
     }
+
+    println!("{:?}", boards[1]);
 
     return 0;
 }
@@ -153,22 +168,6 @@ fn task1() {
 
     let (numbers, boards) = read_data();
     let score = find_first_winnig_board(numbers, boards);
-
-    /*
-    for number in &numbers {
-        for board in &mut boards {
-            if board.choose_number(number) {
-                if board.is_solved() {
-                    let score = board.calculate_score(number);
-
-                    if score > best_score {
-                        best_score = score;
-                    }
-                }
-            }
-        }
-    }
-    */
 
     println!("Result: {}", score);
 }
