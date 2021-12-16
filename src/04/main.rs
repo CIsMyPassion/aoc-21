@@ -141,21 +141,12 @@ fn read_data() -> (Vec<u8>, Vec<Board>) {
 fn find_first_winning_board(numbers: Vec<u8>, mut boards: Vec<Board>) -> u16 {
 
     for number in &numbers {
-
-        let mut solved = false;
-        let mut solution: u16 = 0;
-
         for board in &mut boards {
             if board.choose_number(number) {
                 if board.is_solved() {
-                    solution = board.calculate_score(number);
-                    solved = true;
+                    return board.calculate_score(number);
                 }
             }
-        }
-
-        if solved {
-            return solution;
         }
     }
 
@@ -163,6 +154,25 @@ fn find_first_winning_board(numbers: Vec<u8>, mut boards: Vec<Board>) -> u16 {
 }
 
 fn find_last_winning_board(numbers: Vec<u8>, mut boards: Vec<Board>) -> u16 {
+
+    for number in &numbers {
+        let mut i: i8 = 0;
+
+        while i < boards.len() as i8 {
+            println!("{}", boards.len());
+            if boards[i as usize].choose_number(number) {
+                if boards[i as usize].is_solved() {
+                    if boards.len() == 1 {
+                        return boards[i as usize].calculate_score(number);
+                    } else {
+                        boards.remove(i as usize);
+                        i -= 1;
+                    }
+                }
+            }
+            i += 1;
+        }
+    }
 
     return 0;
 }
