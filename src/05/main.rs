@@ -1,7 +1,7 @@
 use std::str::FromStr;
 use std::fs;
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 struct Point {
     x: u16,
     y: u16,
@@ -61,18 +61,34 @@ impl FromStr for Line {
 }
 
 struct Field {
-    lines: Vec<Line>,
     values: Vec<u8>,
+    width: u16,
+    height: u16,
 }
 
 impl Field {
 
-    pub fn new(lines: Vec<Line>) -> Self {
-        Field { lines: lines, values: Vec::new() }
+    pub fn new(width: u16, height: u16) -> Self {
+
+        let length = width as usize * height as usize;
+
+        Field { values: vec![0; length], width: width, height: height }
+    }
+
+    pub fn get_value(&self, point: &Point) -> u8 {
+        let position = point.y as usize * self.width as usize + point.x as usize;
+        self.values[position]
+    }
+
+    fn apply_points(&mut self, points: &Vec<Point>) {
+        for point in points {
+            let position = point.y as usize * self.width as usize + point.x as usize;
+            self.values[position] += 1;
+        }
     }
 }
 
-fn read_data() -> Field {
+fn read_data() -> Vec<Line> {
 
     let contents = fs::read_to_string("data")
         .expect("File could not be read");
@@ -84,14 +100,47 @@ fn read_data() -> Field {
         lines.push(line_string.parse::<Line>().unwrap());
     }
 
-    Field::new(lines)
+    lines
 }
 
 fn task1() {
 
-    let filed = read_data();
+    let lines = read_data();
+    let mut field = Field::new(1000, 1000);
 
-    println!("Result: {}", 0);
+    for line in &lines {
+
+        if line.start.x == line.end.x || line.start.y == line.end.y {
+
+
+            let mut points = Vec::new();
+
+            let x_min = std::cmp::min(line.start.x, line.end.x);
+            let x_max = std::cmp::max(line.start.x, line.end.x) + 1;
+            let y_min = std::cmp::min(line.start.y, line.end.y);
+            let y_max = std::cmp::max(line.start.y, line.end.y) + 1;
+
+            for x in x_min..x_max {
+                for y in y_min..y_max {
+                    points.push(Point::new(x, y));
+                }
+            }
+
+            field.apply_points(&points);
+        }
+    }
+
+    let mut counter = 0;
+
+    for x in 0..field.width {
+        for y in 0..field.height {
+            if field.get_value(&Point::new(x, y)) >= 2 {
+                counter += 1;
+            }
+        }
+    }
+
+    println!("Result: {}", counter);
 }
 
 fn task2() {
